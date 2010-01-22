@@ -1,0 +1,5 @@
+A variety of tools I've written to make OS X administration a little easier.
+
+Each package assumes you've got the Luggage (http://github.com/unixorn/luggage)
+installed to do the dirty work of creating a pkg and wrapping it in a dmg file.
+
