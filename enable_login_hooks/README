@@ -1,16 +1,19 @@
 The hook drivers only load scripts that are in /etc/hooks, have
-their x bit set and have a name ending in .hook.
+their x bit set, and have either an LI or LO prefix in their name.
+They're run in alphabetic order.
 
 LI* hooks are run on login, and LO* hooks are run on logout.
 
 You'll probably want to replace hook_background.jpg with something
 appropriate for your local environment.
 
-You need to download a copy of iHook from 
+Prerequisites:
 
-http://rsug.itd.umich.edu/software/ihook/ 
+iHook - You need to download a copy of iHook from
 
-since my hook driver scripts rely on it to present a pretty dialog
+http://rsug.itd.umich.edu/software/ihook/
+
+since the hook driver scripts rely on it to present a pretty dialog
 with a progress bar during login & logout as they run the appropriate
 hook scripts.
 
@@ -19,3 +22,13 @@ Tar it up, then bzip2 the tarball. I recommend keeping the tarball
 make download it and rename it to iHook.app.tar.bz2 as part of the
 package build process. This will let you reproduce specific versions
 of the package later.
+
+Luggage: http://http://github.com/unixorn/luggage
+
+Luggage isn't necessary to run the hook loaders, just to make
+deploying them to your Macintoshes easier. You need to update
+TARBALL_LOCATION in the included Luggage Makefile to point to where
+you're storing your iHook tarball, then you can make a dmg with a
+pkg file containing everything necessary for the hook script suite
+with 'make dmg'. That dmg can then be easily deployed with InstaDMG
+or puppet.
