@@ -1,6 +1,5 @@
-#!/usr/bin/ruby
 #
-# fact returns knob values based on contents of /etc/knobs.
+# This fact returns knob values based on contents of /etc/knobs.
 #
 # Author: jpb@ooyala.com
 #
@@ -18,8 +17,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-
-require 'facter'
 
 def logger(message)
   system("/usr/bin/logger -t read_knobs #{message}")
