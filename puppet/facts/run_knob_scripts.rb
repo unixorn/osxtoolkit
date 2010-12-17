@@ -6,7 +6,7 @@
 #
 # Author: jpb@ooyala.com
 #
-# Copyright 2010 Ooyala
+# Copyright 2009 Ooyala
 # License: BSD
 
 def logger(message)
@@ -46,16 +46,20 @@ def load_scripts(script_d)
     return nil
   end
   Dir["#{script_d}/*"].each do |script|
-    if File.executable?(script)
-      script_name = script.split('/')[-1]
-      Facter.add(script_name) do
-        setcode do
-          data = run_script(script)
-          data
+    if File.file?(script)
+      if File.executable?(script)
+        script_name = script.split('/')[-1]
+        Facter.add(script_name) do
+          setcode do
+            data = run_script(script)
+            data
+          end
         end
+      else
+        logger("Can't execute #{script}!")
       end
     else
-      logger("Can't execute #{script}!")
+      logger("#{script} not a file")
     end
   end
 end

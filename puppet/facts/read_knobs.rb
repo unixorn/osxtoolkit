@@ -18,11 +18,12 @@
 #   limitations under the License.
 #
 
+
 def logger(message)
   system("/usr/bin/logger -t read_knobs #{message}")
 end
 
-# facts can only have one value. We ignore lines with shell style comments,
+# facts can only have one value. Ignore lines with shell style comments,
 # and return the last valid line.
 
 def read_knob(filename)
@@ -53,16 +54,20 @@ def load_knobs(knob_d)
     return nil
   end
   Dir["#{knob_d}/*"].each do |knob|
-    if File.readable?(knob)
-      knob_name = knob.split('/')[-1]
-      Facter.add("#{knob_name}") do
-        setcode do
-          data = read_knob(knob)
-          data
+    if File.file?(knob)
+      if File.readable?(knob)
+        knob_name = knob.split('/')[-1]
+        Facter.add("#{knob_name}") do
+          setcode do
+            data = read_knob(knob)
+            data
+          end
         end
+      else
+        logger("Can't read #{knob}!")
       end
     else
-      logger("Can't read #{knob}!")
+      logger("#{knob} is not a file")
     end
   end
 end
