@@ -6,15 +6,23 @@
 #
 # Author: jpb@ooyala.com
 #
-# Copyright 2009 Ooyala
-# License: BSD
-
-def logger(message)
-  system("/usr/bin/logger -t scripts_to_facts #{message}")
-end
-
+# Copyright 2009 Ooyala, Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 # facts can only have one value. Ignore lines with shell style comments,
 # and return the last valid line.
+
 def run_script(scriptname)
   script_output = `#{scriptname}`
   # only parse output if script exited 0
@@ -34,15 +42,15 @@ def run_script(scriptname)
     }
     return value
   else
-    logger("#{scriptname} failed with exit code #{exit_value}")
+    Puppet.warning("#{__FILE__} #{scriptname} failed with exit code #{exit_value}")
     return nil
   end
 end
 
 def load_scripts(script_d)
-  logger "Loading fact scripts from #{script_d}..."
+  Puppet.info "#{__FILE__} Loading fact scripts from #{script_d}..."
   if ! File.directory?(script_d)
-    logger("Can't read #{script_d}!")
+    Puppet.warning("#{__FILE__} Can't read #{script_d}!")
     return nil
   end
   Dir["#{script_d}/*"].each do |script|
@@ -56,12 +64,14 @@ def load_scripts(script_d)
           end
         end
       else
-        logger("Can't execute #{script}!")
+        Puppet.warning("#{__FILE__} Can't execute #{script}!")
       end
     else
-      logger("#{script} not a file")
+      Puppet.warning("#{__FILE__} #{script} not a file")
     end
   end
 end
 
-load_scripts('/etc/knob_scripts')
+if File.directory?('/etc/knobs/scripts')
+  load_scripts('/etc/knobs/scripts')
+end

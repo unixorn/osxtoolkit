@@ -1,9 +1,9 @@
 #
-# This fact returns knob values based on contents of /etc/knobs.
+# fact returns knob values based on contents of /etc/knobs.
 #
 # Author: jpb@ooyala.com
 #
-# Copyright 2009 Ooyala, Inc.
+# Copyright 2009-2011 Ooyala, Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,12 +17,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-
-
-def logger(message)
-  system("/usr/bin/logger -t read_knobs #{message}")
-end
-
 # facts can only have one value. Ignore lines with shell style comments,
 # and return the last valid line.
 
@@ -48,9 +42,7 @@ def read_knob(filename)
 end
 
 def load_knobs(knob_d)
-  logger "Processing #{knob_d}..."
   if ! File.directory?(knob_d)
-    logger("Can't read #{knob_d}!")
     return nil
   end
   Dir["#{knob_d}/*"].each do |knob|
@@ -60,16 +52,15 @@ def load_knobs(knob_d)
         Facter.add("#{knob_name}") do
           setcode do
             data = read_knob(knob)
-            data
+            return data
           end
         end
-      else
-        logger("Can't read #{knob}!")
       end
-    else
-      logger("#{knob} is not a file")
     end
   end
 end
 
-load_knobs('/etc/knobs')
+if File.directory?('/etc/knobs')
+  load_knobs('/etc/knobs')
+end
+
