@@ -3,7 +3,7 @@
 #
 # Author: jpb@ooyala.com
 #
-# Copyright 2009-2011 Ooyala, Inc.
+# Copyright 2009-2012 Ooyala, Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@
 # facts can only have one value. Ignore lines with shell style comments,
 # and return the last valid line.
 
+require 'puppet'
+
 def read_knob(filename)
   knob_name = filename.split('/')[-1]
   knob_file = File.open(filename)
-  # an empty knob file must have been created for a reason, so set default
-  # value to true
-  value = true
+  value = nil
   knob_file.each { |line|
     if line[0,1] != "#"
       if (line.downcase.chomp == "true") or (line.downcase.chomp == "t")
@@ -38,13 +38,22 @@ def read_knob(filename)
     end
   }
   knob_file.close
-  value
+
+  # an empty knob file must have been created for a reason, so set default
+  # value to true - an empty file might just have a single newline so check
+  # for non-whitespace characters and assume whitespace only means true
+  if value.nil? or (value.is_a?(String) and value.match(/\S/).nil?)
+    value = true
+  end
+
+  return value
 end
 
 def load_knobs(knob_d)
   if ! File.directory?(knob_d)
     return nil
   end
+
   Dir["#{knob_d}/*"].each do |knob|
     if File.file?(knob)
       if File.readable?(knob)
@@ -52,7 +61,6 @@ def load_knobs(knob_d)
         Facter.add("#{knob_name}") do
           setcode do
             data = read_knob(knob)
-            return data
           end
         end
       end

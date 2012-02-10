@@ -42,15 +42,14 @@ def run_script(scriptname)
     }
     return value
   else
-    Puppet.warning("#{__FILE__} #{scriptname} failed with exit code #{exit_value}")
+    Puppet.warning("Knob script '#{scriptname}' failed with exit code #{exit_value}")
     return nil
   end
 end
 
 def load_scripts(script_d)
-  Puppet.info "#{__FILE__} Loading fact scripts from #{script_d}..."
   if ! File.directory?(script_d)
-    Puppet.warning("#{__FILE__} Can't read #{script_d}!")
+    Puppet.warning("Can't read knob script directory, '#{script_d}'!")
     return nil
   end
   Dir["#{script_d}/*"].each do |script|
@@ -60,14 +59,13 @@ def load_scripts(script_d)
         Facter.add(script_name) do
           setcode do
             data = run_script(script)
-            data
           end
         end
       else
-        Puppet.warning("#{__FILE__} Can't execute #{script}!")
+        Puppet.warning("Can't execute knob script '#{script}'!")
       end
     else
-      Puppet.warning("#{__FILE__} #{script} not a file")
+      Puppet.warning("Knob script '#{script}' does not appear to be a file. Skipping it.")
     end
   end
 end
